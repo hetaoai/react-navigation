@@ -78,8 +78,14 @@ class CardStackTransitioner extends Component<DefaultProps, Props, void> {
     // props for the old screen
     prevTransitionProps: NavigationTransitionProps
   ) => {
-    const nextScreen = transitionProps.scene.route.routeName;
-    const prevScreen = prevTransitionProps.scene.route.routeName;
+    const nextScreen = {
+      index: transitionProps.index,
+      routeName: transitionProps.scene.route.routeName
+    };
+    const prevScreen = {
+      index: prevTransitionProps.index,
+      routeName: prevTransitionProps.scene.route.routeName
+    };
     const {mode} = this.props;
     const modeStr = typeof mode === 'function' ? mode(nextScreen,prevScreen):mode;
     this.setState({mode:modeStr});
