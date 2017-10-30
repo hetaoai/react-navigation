@@ -55,6 +55,10 @@ class CardStackTransitioner extends Component<DefaultProps, Props, void> {
     mode: 'card',
   };
 
+  state = {
+    mode:'card'
+  }
+
   render() {
     return (
       <Transitioner
@@ -74,7 +78,12 @@ class CardStackTransitioner extends Component<DefaultProps, Props, void> {
     // props for the old screen
     prevTransitionProps: NavigationTransitionProps
   ) => {
-    const isModal = this.props.mode === 'modal';
+    const nextScreen = transitionProps.scene.route.routeName;
+    const prevScreen = prevTransitionProps.scene.route.routeName;
+    const {mode} = this.props;
+    const modeStr = typeof mode === 'function' ? mode(nextScreen,prevScreen):mode;
+    this.setState({mode:modeStr});
+    const isModal = modeStr === 'modal';
     // Copy the object so we can assign useNativeDriver below
     // (avoid Flow error, transitionSpec is of type NavigationTransitionSpec).
     const transitionSpec = {
@@ -110,7 +119,7 @@ class CardStackTransitioner extends Component<DefaultProps, Props, void> {
       <CardStack
         screenProps={screenProps}
         headerMode={headerMode}
-        mode={mode}
+        mode={this.state.mode}
         router={router}
         cardStyle={cardStyle}
         transitionConfig={transitionConfig}
