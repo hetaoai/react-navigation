@@ -69,7 +69,7 @@ type Props = {
 
 /**
  * The max duration of the card animation in milliseconds after released gesture.
- * The actual duration should be always less then that because the rest distance 
+ * The actual duration should be always less then that because the rest distance
  * is always less then the full distance of the layout.
  */
 const ANIMATION_DURATION = 500;
@@ -274,12 +274,17 @@ class CardStack extends Component {
         // Compare to the gesture distance relavant to card or modal
         const {
           gestureResponseDistance: userGestureResponseDistance = {},
+          gestureResponseEnableChecker = () => true,
         } = this._getScreenDetails(scene).options;
         const gestureResponseDistance = isVertical
           ? userGestureResponseDistance.vertical ||
             GESTURE_RESPONSE_DISTANCE_VERTICAL
           : userGestureResponseDistance.horizontal ||
             GESTURE_RESPONSE_DISTANCE_HORIZONTAL;
+        const { sceneInstance } = this._sceneViews[scene.key];
+        if (!gestureResponseEnableChecker(sceneInstance, event.nativeEvent)) {
+          return false;
+        }
         // GESTURE_RESPONSE_DISTANCE is about 25 or 30. Or 135 for modals
         if (screenEdgeDistance > gestureResponseDistance) {
           // Reject touches that started in the middle of the screen
@@ -388,6 +393,8 @@ class CardStack extends Component {
     return 'float';
   }
 
+  _sceneViews = {};
+
   _renderInnerScene(
     SceneComponent: ReactClass<*>,
     scene: NavigationScene
@@ -403,6 +410,9 @@ class CardStack extends Component {
               screenProps={screenProps}
               navigation={navigation}
               component={SceneComponent}
+              ref={(me: React.Element<any>) =>
+                (this._sceneViews[scene.key] = me)
+              }
             />
           </View>
           {this._renderHeader(scene, headerMode)}
@@ -414,6 +424,7 @@ class CardStack extends Component {
         screenProps={this.props.screenProps}
         navigation={navigation}
         component={SceneComponent}
+        ref={(me: React.Element<any>) => (this._sceneViews[scene.key] = me)}
       />
     );
   }

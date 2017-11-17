@@ -4,10 +4,10 @@ import React, { PureComponent } from 'react';
 import propTypes from 'prop-types';
 
 import type {
-  NavigationScreenProp,
-  NavigationRoute,
   NavigationAction,
   NavigationNavigatorProps,
+  NavigationRoute,
+  NavigationScreenProp,
 } from '../TypeDefinition';
 
 type Props<O> = {
@@ -32,6 +32,12 @@ export default class SceneView<O> extends PureComponent<void, Props<O>, void> {
   render() {
     const { screenProps, navigation, component: Component } = this.props;
 
-    return <Component screenProps={screenProps} navigation={navigation} />;
+    return (
+      <Component
+        screenProps={screenProps}
+        navigation={navigation}
+        ref={(me: React.Element<any>) => (this.sceneInstance = me)}
+      />
+    );
   }
 }
